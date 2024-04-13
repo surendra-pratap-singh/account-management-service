@@ -11,9 +11,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +29,7 @@ import java.math.BigDecimal;
 @Tag(name = "Account API", description = "Account management service")
 @RequestMapping(value = "/v1/accounts", produces = "application/json")
 @RequiredArgsConstructor
+@Validated
 public class AccountController {
 
     private final AccountService accountService;
@@ -42,13 +47,13 @@ public class AccountController {
                     })
             })
     @PostMapping("/transfer")
-    public ResponseEntity<String> transferFunds(@RequestParam Long sourceAccountId,
+    public ResponseEntity<String> transferFunds(@RequestParam @NotBlank @Valid Long sourceAccountId,
                                                 @RequestParam Long targetAccountId,
                                                 @RequestParam BigDecimal amount,
                                                 @RequestParam CurrencyType currency) {
-        // on success it will return 204
+
         var response = accountService.transferFunds(sourceAccountId, targetAccountId, amount, currency);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
     @Operation(description = "This API is to create new currency account.",
