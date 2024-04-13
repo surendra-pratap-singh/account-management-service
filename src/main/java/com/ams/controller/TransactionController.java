@@ -43,6 +43,8 @@ public class TransactionController {
                                                        @RequestParam(defaultValue = "0") int offset,
                                                        @RequestParam(defaultValue = "10") int limit) {
         log.info("Getting transactions for accountId:{}",accountId);
+        log.info("Getting transactions for offset:{}",offset);
+        log.info("Getting transactions for limit:{}",limit);
         return new ResponseEntity<>(accountService.getTransactions(accountId, offset, limit), HttpStatus.OK);
     }
 

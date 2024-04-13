@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +24,10 @@ import java.math.BigDecimal;
 @RestController
 @Tag(name = "Account API", description = "Account management service")
 @RequestMapping(value = "/v1/accounts", produces = "application/json")
+@RequiredArgsConstructor
 public class AccountController {
 
-    @Autowired
-    private AccountService accountService;
+    private final AccountService accountService;
 
     @Operation(description = "Funds transfer from source account to target account by accountId.",
             responses = {
@@ -47,7 +47,7 @@ public class AccountController {
                                                 @RequestParam BigDecimal amount,
                                                 @RequestParam CurrencyType currency) {
         // on success it will return 204
-        var response = accountService.transferFunds(sourceAccountId, targetAccountId, amount,currency);
+        var response = accountService.transferFunds(sourceAccountId, targetAccountId, amount, currency);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -69,8 +69,7 @@ public class AccountController {
         //validate request params here
         if (clientId != null && currency != null) {
             return new ResponseEntity<>(accountService.creatAccount(clientId, currency), HttpStatus.OK);
-        }
-        else
+        } else
             throw new InvalidRequestException("Enter valid clientId or currency");
 
     }

@@ -31,7 +31,7 @@ public class Account {
     private String currency;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "client_id", referencedColumnName = "client_id")
     private Client client;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)

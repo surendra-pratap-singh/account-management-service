@@ -40,7 +40,7 @@ public class Transaction {
     private Date date;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id")
     private Account account;
 
     @Override
