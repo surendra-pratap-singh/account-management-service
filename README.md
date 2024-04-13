@@ -17,7 +17,7 @@ Step 1 - Build and run the application "AccountManagementServiceApplication" fro
 
 Step 2 - H2 embedded database is used in this project and can be accessed through "http://localhost:8081/h2-console/"
 
-Step 3 - To access the database enter the username - "sh" and do not provide password. Provide the correct JDBC url for "mem" Database- "jdbc:h2:mem:account_db" and login.
+Step 3 - To access the database enter the username - "sa" and do not provide password. Provide the correct JDBC url for "mem" Database- "jdbc:h2:mem:account_db" and login.
 
 Step 4 - Go to browser and test the h2 database connection and connect to access the database to check the records in the database.
 

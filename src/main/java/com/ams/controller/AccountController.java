@@ -2,19 +2,21 @@ package com.ams.controller;
 
 import com.ams.enums.CurrencyType;
 import com.ams.exception.InternalServerErrorException;
-import com.ams.exception.InvalidRequestException;
 import com.ams.exception.ResourceNotFoundException;
 import com.ams.model.dto.AccountDto;
+import com.ams.model.response.Response;
 import com.ams.service.AccountService;
+import com.ams.util.AmsUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,6 +32,7 @@ import java.math.BigDecimal;
 @RequestMapping(value = "/v1/accounts", produces = "application/json")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class AccountController {
 
     private final AccountService accountService;
@@ -47,12 +50,13 @@ public class AccountController {
                     })
             })
     @PostMapping("/transfer")
-    public ResponseEntity<String> transferFunds(@RequestParam @NotBlank @Valid Long sourceAccountId,
-                                                @RequestParam Long targetAccountId,
-                                                @RequestParam BigDecimal amount,
-                                                @RequestParam CurrencyType currency) {
+    public ResponseEntity<Response> transferFunds(@RequestParam @NonNull Long sourceAccountId,
+                                                  @RequestParam @NonNull Long targetAccountId,
+                                                  @RequestParam @NonNull BigDecimal amount,
+                                                  @RequestParam @NonNull CurrencyType currency) {
 
-        var response = accountService.transferFunds(sourceAccountId, targetAccountId, amount, currency);
+        log.debug("Request received to transfer funds from account {}", AmsUtils.maskData(sourceAccountId));
+        Response response = new Response(HttpStatus.NO_CONTENT, accountService.transferFunds(sourceAccountId, targetAccountId, amount, currency));
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
@@ -69,13 +73,10 @@ public class AccountController {
                     })
             })
     @PostMapping("/create")
-    public ResponseEntity<AccountDto> createAccount(@RequestParam Long clientId,
-                                                    @RequestParam CurrencyType currency) {
-        //validate request params here
-        if (clientId != null && currency != null) {
-            return new ResponseEntity<>(accountService.creatAccount(clientId, currency), HttpStatus.OK);
-        } else
-            throw new InvalidRequestException("Enter valid clientId or currency");
-
+    public ResponseEntity<Response> createAccount(@RequestParam @NonNull Long clientId,
+                                                    @RequestParam @NonNull CurrencyType currency) {
+        log.debug("Request received to create new account for client {} currency {}", AmsUtils.maskData(clientId),currency.name());
+        Response response = new Response(HttpStatus.CREATED,accountService.creatAccount(clientId, currency));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

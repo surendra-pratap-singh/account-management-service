@@ -13,12 +13,4 @@ public class AccountMapper {
                 .build();
     }
 
-    public static Account mapDtoToEntity(AccountDto account){
-        return Account.builder()
-                .accountId(account.getAccountId())
-                .balance(account.getBalance())
-                .currency(account.getCurrency())
-                .build();
-    }
-
 }

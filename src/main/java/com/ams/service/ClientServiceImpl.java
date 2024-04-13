@@ -7,15 +7,18 @@ import com.ams.model.db.Client;
 import com.ams.model.dto.AccountDto;
 import com.ams.repository.AccountRepository;
 import com.ams.repository.ClientRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 public class ClientServiceImpl implements ClientService {
 
     @Autowired
@@ -25,13 +28,14 @@ public class ClientServiceImpl implements ClientService {
     private ClientRepository clientRepository;
 
     public List<AccountDto> getClientAccounts(Long clientId) {
-        Client client = clientRepository.findClientByClientId(clientId);
-        if(client != null){
-            List<Account> accountList = accountRepository.findByClient(client);
+        Optional <Client> client = clientRepository.findClientByClientId(clientId);
+        if(client.isPresent()){
+            List<Account> accountList = accountRepository.findByClient(client.get());
             return accountList.stream().
                     map(AccountMapper::mapEntityToDto).collect(Collectors.toList());
         }
         else {
+            log.trace("Record not found for client id {}",clientId);
             throw new ResourceNotFoundException("Record not found for client id "+clientId);
         }
     }

@@ -30,7 +30,7 @@ public class CurrencyExchange {
 
     public BigDecimal getExchangedCurrency(String fromCurrency, String toCurrency, BigDecimal amount) {
         log.info("API KEY: {}", EXCHANGE_API_KEY);
-        String url = EXCHANGE_API_URL + EXCHANGE_API_KEY + "/pair/" + fromCurrency + "/" + toCurrency + "/" + amount;
+        String url = buildUrl(fromCurrency, toCurrency, amount);
 
         String responseString = restTemplate.getForObject(url, String.class);
 
@@ -41,6 +41,10 @@ public class CurrencyExchange {
         } else {
             throw new ResourceNotFoundException("Not Found");
         }
+    }
+
+    private String buildUrl(String fromCurrency, String toCurrency, BigDecimal amount){
+        return EXCHANGE_API_URL + EXCHANGE_API_KEY + "/pair/" + fromCurrency + "/" + toCurrency + "/" + amount;
     }
 
 }

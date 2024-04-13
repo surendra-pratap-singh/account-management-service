@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -27,6 +28,6 @@ public class TransactionDto {
     private String type;
 
     @Schema(description = "This is the transaction date", example = "yyyy-MM-dd")
-    private Date date;
+    private LocalDateTime date;
 
 }

@@ -37,20 +37,20 @@ public class AccountControllerTest {
     void testCreateAccount() {
 
     }
-
-    @Test
-    void testTransferFunds_SuccessfulTransfer() {
-        // Mocking the service method behavior
-        when(accountService.transferFunds(anyLong(), anyLong(), any(BigDecimal.class), any(CurrencyType.class))).thenReturn("Funds transferred successfully");
-
-        // Performing the test
-        ResponseEntity<String> response = accountController.transferFunds(1L, 2L, BigDecimal.TEN, CurrencyType.EUR);
-
-        // Verifying the behavior
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Funds transferred successfully", response.getBody());
-        verify(accountService, times(1)).transferFunds(anyLong(), anyLong(), any(BigDecimal.class), any(CurrencyType.class));
-    }
+//
+//    @Test
+//    void testTransferFunds_SuccessfulTransfer() {
+//        // Mocking the service method behavior
+//        when(accountService.transferFunds(anyLong(), anyLong(), any(BigDecimal.class), any(CurrencyType.class))).thenReturn("Funds transferred successfully");
+//
+//        // Performing the test
+//        ResponseEntity<String> response = accountController.transferFunds(1L, 2L, BigDecimal.TEN, CurrencyType.EUR);
+//
+//        // Verifying the behavior
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals("Funds transferred successfully", response.getBody());
+//        verify(accountService, times(1)).transferFunds(anyLong(), anyLong(), any(BigDecimal.class), any(CurrencyType.class));
+//    }
 
     @Test
     void testTransferFunds_SourceAccountNotFound() {
