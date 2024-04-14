@@ -14,6 +14,6 @@ public interface AccountService {
 
     String transferFunds(Long sourceAccountId, Long targetAccountId, BigDecimal amount, CurrencyType currency) ;
 
-    AccountDto creatAccount(Long clientId, CurrencyType currency);
+    Object createAccount(Long clientId, CurrencyType currency);
 
 }

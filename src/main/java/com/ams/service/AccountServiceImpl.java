@@ -53,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> sourceAccount = accountRepository.findByAccountId(sourceAccountId);
         if(sourceAccount.isEmpty()){
             log.error("Source account does not exist {}",AmsUtils.maskData(sourceAccountId));
-            throw new InvalidRequestException("Source account does not exist");
+            throw new ResourceNotFoundException("Source account not found");
         }
 
         if (sourceAccount.get().getBalance().compareTo(BigDecimal.ZERO) <= 0) {
@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> targetAccount = accountRepository.findByAccountId(targetAccountId);
         if(targetAccount.isEmpty()){
             log.error("Target account does not exist {}",AmsUtils.maskData(sourceAccountId));
-            throw new InvalidRequestException("Target account does not exist");
+            throw new ResourceNotFoundException("Target account does not exist");
         }
 
         if (sourceAccount.get().getBalance().compareTo(amount) < 0) {
@@ -86,7 +86,7 @@ public class AccountServiceImpl implements AccountService {
             saveTransaction(sourceAccount.get(), targetAccount.get(), amount, exchangeAmount);
         }
         accountRepository.saveAll(List.of(sourceAccount.get(), targetAccount.get()));
-        return "Funds transferred";
+        return "Transfer successful";
     }
 
     private void saveTransaction(Account sourceAccount, Account targetAccount, BigDecimal sourceAmount, BigDecimal targetAmount) {
@@ -121,7 +121,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto creatAccount(Long clientId, CurrencyType currency) {
+    public Object createAccount(Long clientId, CurrencyType currency) {
         Optional<Client> client = clientRepository.findClientByClientId(clientId);
         if(client.isPresent()){
             boolean flag = false;
@@ -140,11 +140,11 @@ public class AccountServiceImpl implements AccountService {
                 return AccountMapper.mapEntityToDto(accountRepository.save(account));
             } else {
                 log.error("Account already exists for currency {}",currency);
-                throw new InvalidRequestException("Account already exists for currency: " + currency);
+                throw new InvalidRequestException("Account already exists for currency:" + currency);
             }
         } else {
             log.error("Account already exists for currency {}",currency);
-            throw new ResourceNotFoundException("No record found for Client Id" + clientId);
+            throw new ResourceNotFoundException("No record found");
         }
     }
 }

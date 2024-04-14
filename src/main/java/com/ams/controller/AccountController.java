@@ -1,7 +1,9 @@
 package com.ams.controller;
 
 import com.ams.enums.CurrencyType;
+import com.ams.exception.InsufficientFundsException;
 import com.ams.exception.InternalServerErrorException;
+import com.ams.exception.InvalidCurrencyException;
 import com.ams.exception.ResourceNotFoundException;
 import com.ams.model.dto.AccountDto;
 import com.ams.model.response.Response;
@@ -40,8 +42,14 @@ public class AccountController {
                     @ApiResponse(responseCode = "200", description = "Funds transferred successfully", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
                     }),
+                    @ApiResponse(responseCode = "422", description = "Insufficient funds", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = InsufficientFundsException.class))
+                    }),
                     @ApiResponse(responseCode = "404", description = "Not Found Error", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ResourceNotFoundException.class))
+                    }),
+                    @ApiResponse(responseCode = "422", description = "Invalid currency", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = InvalidCurrencyException.class))
                     }),
                     @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = InternalServerErrorException.class))
@@ -73,7 +81,6 @@ public class AccountController {
     public Response createAccount(@RequestParam @NonNull Long clientId,
                                                     @RequestParam @NonNull CurrencyType currency) {
         log.debug("Request received to create new account for client {} currency {}", AmsUtils.maskData(clientId),currency.name());
-
-        return new Response(HttpStatus.CREATED,accountService.creatAccount(clientId, currency));
+        return new Response(HttpStatus.CREATED,accountService.createAccount(clientId, currency));
     }
 }
