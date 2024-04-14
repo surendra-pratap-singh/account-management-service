@@ -18,6 +18,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,13 +57,13 @@ public class AccountController {
                     })
             })
     @PostMapping("/transfer")
-    public Response transferFunds(@RequestParam @NonNull Long sourceAccountId,
+    public ResponseEntity<Response> transferFunds(@RequestParam @NonNull Long sourceAccountId,
                                                   @RequestParam @NonNull Long targetAccountId,
                                                   @RequestParam @NonNull BigDecimal amount,
                                                   @RequestParam @NonNull CurrencyType currency) {
 
         log.debug("Request received to transfer funds from account {}", AmsUtils.maskData(sourceAccountId));
-        return new Response(HttpStatus.OK, accountService.transferFunds(sourceAccountId, targetAccountId, amount, currency));
+        return new ResponseEntity<>(new Response(HttpStatus.OK, accountService.transferFunds(sourceAccountId, targetAccountId, amount, currency)),HttpStatus.OK);
     }
 
     @Operation(description = "This API is to create new currency account.",
@@ -78,9 +79,9 @@ public class AccountController {
                     })
             })
     @PostMapping("/create")
-    public Response createAccount(@RequestParam @NonNull Long clientId,
+    public ResponseEntity<Response> createAccount(@RequestParam @NonNull Long clientId,
                                                     @RequestParam @NonNull CurrencyType currency) {
         log.debug("Request received to create new account for client {} currency {}", AmsUtils.maskData(clientId),currency.name());
-        return new Response(HttpStatus.CREATED,accountService.createAccount(clientId, currency));
+        return new ResponseEntity<>(new Response(HttpStatus.CREATED,accountService.createAccount(clientId, currency)),HttpStatus.CREATED);
     }
 }

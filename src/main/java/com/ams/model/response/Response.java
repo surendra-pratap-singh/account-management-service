@@ -1,12 +1,15 @@
 package com.ams.model.response;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public class Response {
 
-    public HttpStatus status;
-    public String message = "Success";
-    public Object data;
+    private HttpStatus status;
+    private String message = "Success";
+    private  Object data;
 
     public Response(HttpStatus httpStatus, String message, Object data) {
         this.message = message;

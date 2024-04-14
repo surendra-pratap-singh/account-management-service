@@ -39,7 +39,7 @@ public class AccountControllerTest {
 
         Response response = accountController.transferFunds(123L, 456L, BigDecimal.valueOf(100), CurrencyType.USD);
 
-        assertEquals(HttpStatus.OK, response.status);
+        assertEquals(HttpStatus.OK, response.getStatus());
         assertEquals("Transfer successful", response.message);
     }
 

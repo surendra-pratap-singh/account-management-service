@@ -45,9 +45,9 @@ public class ClientController {
                     })
             })
     @GetMapping("/{clientId}/accounts")
-    public Response getClientAccounts(@PathVariable @NonNull Long clientId) {
+    public ResponseEntity<Response> getClientAccounts(@PathVariable @NonNull Long clientId) {
         log.debug("Received request to get client accounts for clientId : {}", AmsUtils.maskData(clientId));
-        return new Response(HttpStatus.OK,clientService.getClientAccounts(clientId));
+        return new ResponseEntity<>(new Response(HttpStatus.OK,clientService.getClientAccounts(clientId)),HttpStatus.OK);
     }
 
 

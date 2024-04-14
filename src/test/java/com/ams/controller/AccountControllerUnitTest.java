@@ -34,8 +34,8 @@ public class AccountControllerUnitTest {
 
         Response response = accountController.transferFunds(123L, 456L, BigDecimal.valueOf(100), CurrencyType.USD);
 
-        assertEquals(HttpStatus.OK, response.status);
-        assertEquals("Transfer successful", response.message);
+        assertEquals(HttpStatus.OK, response.getStatus());
+        assertEquals("Transfer successful", response.getMessage());
     }
 
 
@@ -46,7 +46,7 @@ public class AccountControllerUnitTest {
 
         Response response = accountController.createAccount(789L, CurrencyType.EUR);
 
-        assertEquals(HttpStatus.CREATED, response.status);
+        assertEquals(HttpStatus.CREATED, response.getStatus());
     }
 
 
@@ -57,8 +57,8 @@ public class AccountControllerUnitTest {
 
         Response response = accountController.createAccount(789L, CurrencyType.EUR);
 
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.status);
-        assertEquals("Account already exists for currency:EUR", response.message);
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatus());
+        assertEquals("Account already exists for currency:EUR", response.getMessage());
     }
 
     // More unit tests can be added for edge cases and error scenarios

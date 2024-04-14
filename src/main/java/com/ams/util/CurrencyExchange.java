@@ -1,8 +1,12 @@
 package com.ams.util;
 
+import com.ams.exception.InternalServerErrorException;
 import com.ams.exception.ResourceNotFoundException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +15,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.swing.text.Utilities;
 import java.math.BigDecimal;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class CurrencyExchange {
 
     @Value("${currency.exchange.key:62205db3096c091233d56eac}")
@@ -22,25 +29,26 @@ public class CurrencyExchange {
     @Value("${currency.exchange.url:https://v6.exchangerate-api.com/v6/}")
     private String EXCHANGE_API_URL;
 
-    @Autowired
     @Lazy
-    private RestTemplate restTemplate;
-
-    private static final Logger log = LoggerFactory.getLogger(CurrencyExchange.class.getSimpleName());
+    private final RestTemplate restTemplate;
 
     public BigDecimal getExchangedCurrency(String fromCurrency, String toCurrency, BigDecimal amount) {
-        log.info("API KEY: {}", EXCHANGE_API_KEY);
+        log.trace("Request for currency exchange");
         String url = buildUrl(fromCurrency, toCurrency, amount);
 
-        String responseString = restTemplate.getForObject(url, String.class);
-
-        if (responseString != null) {
-            log.info("responseString: " + responseString);
-            JsonObject jsonObject = JsonParser.parseString(responseString).getAsJsonObject();
-            return jsonObject.get("conversion_result").getAsBigDecimal();
-        } else {
-            throw new ResourceNotFoundException("Not Found");
+        try{
+            String responseString = restTemplate.getForObject(url, String.class);
+            if (responseString != null) {
+                JsonObject jsonObject = JsonParser.parseString(responseString).getAsJsonObject();
+                return jsonObject.get("conversion_result").getAsBigDecimal();
+            } else {
+                throw new InternalServerErrorException("Exchange service not available");
+            }
+        }catch (Exception e){
+            log.error(e.getMessage());
+            throw new InternalServerErrorException("Exchange service not available");
         }
+
     }
 
     private String buildUrl(String fromCurrency, String toCurrency, BigDecimal amount){

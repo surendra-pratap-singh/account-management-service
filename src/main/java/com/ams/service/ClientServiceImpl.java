@@ -7,6 +7,7 @@ import com.ams.model.db.Client;
 import com.ams.model.dto.AccountDto;
 import com.ams.repository.AccountRepository;
 import com.ams.repository.ClientRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
-    @Autowired
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
     public List<AccountDto> getClientAccounts(Long clientId) {
         Optional <Client> client = clientRepository.findClientByClientId(clientId);
