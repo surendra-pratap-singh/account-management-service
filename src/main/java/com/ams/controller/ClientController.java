@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -38,7 +35,7 @@ public class ClientController {
     @Operation(description = "Get account list by clientId.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Account details retrieved successfully", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDto.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
                     }),
                     @ApiResponse(responseCode = "404", description = "Not Found Error", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ResourceNotFoundException.class))
@@ -48,12 +45,9 @@ public class ClientController {
                     })
             })
     @GetMapping("/{clientId}/accounts")
-    public ResponseEntity<Response> getClientAccounts(@PathVariable @NonNull Long clientId) {
+    public Response getClientAccounts(@PathVariable @NonNull Long clientId) {
         log.debug("Received request to get client accounts for clientId : {}", AmsUtils.maskData(clientId));
-        Response response = new Response(HttpStatus.OK,clientService.getClientAccounts(clientId));
-        return new ResponseEntity<>(response, HttpStatus.OK);
-
-
+        return new Response(HttpStatus.OK,clientService.getClientAccounts(clientId));
     }
 
 

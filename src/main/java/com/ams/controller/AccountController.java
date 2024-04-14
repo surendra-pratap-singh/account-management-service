@@ -12,8 +12,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +38,7 @@ public class AccountController {
     @Operation(description = "Funds transfer from source account to target account by accountId.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Funds transferred successfully", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
                     }),
                     @ApiResponse(responseCode = "404", description = "Not Found Error", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ResourceNotFoundException.class))
@@ -50,20 +48,19 @@ public class AccountController {
                     })
             })
     @PostMapping("/transfer")
-    public ResponseEntity<Response> transferFunds(@RequestParam @NonNull Long sourceAccountId,
+    public Response transferFunds(@RequestParam @NonNull Long sourceAccountId,
                                                   @RequestParam @NonNull Long targetAccountId,
                                                   @RequestParam @NonNull BigDecimal amount,
                                                   @RequestParam @NonNull CurrencyType currency) {
 
         log.debug("Request received to transfer funds from account {}", AmsUtils.maskData(sourceAccountId));
-        Response response = new Response(HttpStatus.NO_CONTENT, accountService.transferFunds(sourceAccountId, targetAccountId, amount, currency));
-        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        return new Response(HttpStatus.OK, accountService.transferFunds(sourceAccountId, targetAccountId, amount, currency));
     }
 
     @Operation(description = "This API is to create new currency account.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Account created successfully", content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDto.class))
+                    @ApiResponse(responseCode = "201", description = "Account created successfully", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))
                     }),
                     @ApiResponse(responseCode = "404", description = "Not Found Error", content = {
                             @Content(mediaType = "application/json", schema = @Schema(implementation = ResourceNotFoundException.class))
@@ -73,10 +70,10 @@ public class AccountController {
                     })
             })
     @PostMapping("/create")
-    public ResponseEntity<Response> createAccount(@RequestParam @NonNull Long clientId,
+    public Response createAccount(@RequestParam @NonNull Long clientId,
                                                     @RequestParam @NonNull CurrencyType currency) {
         log.debug("Request received to create new account for client {} currency {}", AmsUtils.maskData(clientId),currency.name());
-        Response response = new Response(HttpStatus.CREATED,accountService.creatAccount(clientId, currency));
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        return new Response(HttpStatus.CREATED,accountService.creatAccount(clientId, currency));
     }
 }
