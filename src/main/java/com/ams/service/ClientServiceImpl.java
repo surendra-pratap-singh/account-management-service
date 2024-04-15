@@ -9,7 +9,6 @@ import com.ams.repository.AccountRepository;
 import com.ams.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,18 +28,19 @@ public class ClientServiceImpl implements ClientService {
     public List<AccountDto> getClientAccounts(Long clientId) {
         Optional <Client> client = clientRepository.findClientByClientId(clientId);
         if(client.isPresent()){
-            Optional<List<Account>> accountList = accountRepository.findByClient(client.get());
-            if(accountList.isPresent()) {
-                return accountList.get().stream().
+            log.trace("Client found with clientId {}",clientId);
+            List<Account> accountList = accountRepository.findByClient(client.get());
+            if(accountList != null && !accountList.isEmpty()) {
+                return accountList.stream().
                         map(AccountMapper::mapEntityToDto).collect(Collectors.toList());
             }
             else {
-                log.trace("Record not found");
+                log.error("Record not found");
                 throw new ResourceNotFoundException("Record not found");
             }
         }
         else {
-            log.trace("Record not found");
+            log.error("Record not found");
             throw new ResourceNotFoundException("Record not found");
         }
     }

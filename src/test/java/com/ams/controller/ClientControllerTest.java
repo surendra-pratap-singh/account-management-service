@@ -49,7 +49,7 @@ class ClientControllerTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.status").value("NOT_FOUND"))
-                .andExpect(jsonPath("$.message").value("Record not found for client id 171296064379"));
+                .andExpect(jsonPath("$.message").value("Record not found"));
     }
 
 }

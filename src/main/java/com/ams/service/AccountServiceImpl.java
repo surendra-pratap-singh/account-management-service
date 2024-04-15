@@ -8,7 +8,6 @@ import com.ams.mapper.TransactionMapper;
 import com.ams.model.db.Account;
 import com.ams.model.db.Client;
 import com.ams.model.db.Transaction;
-import com.ams.model.dto.AccountDto;
 import com.ams.model.dto.TransactionDto;
 import com.ams.repository.AccountRepository;
 import com.ams.repository.ClientRepository;
@@ -20,13 +19,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,8 +39,10 @@ public class AccountServiceImpl implements AccountService {
     public List<TransactionDto> getTransactions(Long accountId, int offset, int limit) {
         Pageable pageable = PageRequest.of(offset, limit);
         List<Transaction> transaction = transactionRepository.findByAccountIdOrderByDateDesc(accountId, pageable);
-        System.out.println("transaction size: "+transaction.size());
-        log.trace("List of transaction from db {}",transaction.size());
+        if (transaction.isEmpty()) {
+            log.error("Transactions not found for accountId {}", accountId);
+            throw new ResourceNotFoundException("Transactions not found");
+        }
         return transaction.stream()
                 .map(TransactionMapper::mapTransactionEntityToDto)
                 .toList();
@@ -54,8 +52,8 @@ public class AccountServiceImpl implements AccountService {
     public String transferFunds(Long sourceAccountId, Long targetAccountId, BigDecimal amount, CurrencyType currency) {
 
         Optional<Account> sourceAccount = accountRepository.findByAccountId(sourceAccountId);
-        if(sourceAccount.isEmpty()){
-            log.error("Source account does not exist {}",AmsUtils.maskData(sourceAccountId));
+        if (sourceAccount.isEmpty()) {
+            log.error("Source account does not exist {}", AmsUtils.maskData(sourceAccountId));
             throw new ResourceNotFoundException("Source account not found");
         }
 
@@ -65,8 +63,8 @@ public class AccountServiceImpl implements AccountService {
         }
 
         Optional<Account> targetAccount = accountRepository.findByAccountId(targetAccountId);
-        if(targetAccount.isEmpty()){
-            log.error("Target account does not exist {}",AmsUtils.maskData(sourceAccountId));
+        if (targetAccount.isEmpty()) {
+            log.error("Target account does not exist {}", AmsUtils.maskData(sourceAccountId));
             throw new ResourceNotFoundException("Target account does not exist");
         }
 
@@ -74,8 +72,8 @@ public class AccountServiceImpl implements AccountService {
             log.error("Insufficient funds");
             throw new InsufficientFundsException("Insufficient funds");
         }
-         if (!targetAccount.get().getCurrency().equalsIgnoreCase(currency.name())) {
-            log.info("Invalid currency {} ",targetAccount.get().getCurrency());
+        if (!targetAccount.get().getCurrency().equalsIgnoreCase(currency.name())) {
+            log.trace("Invalid currency {} ", targetAccount.get().getCurrency());
             throw new InvalidCurrencyException("Invalid currency");
         }
         if (sourceAccount.get().getCurrency().equalsIgnoreCase(targetAccount.get().getCurrency())) {
@@ -94,43 +92,45 @@ public class AccountServiceImpl implements AccountService {
 
     private void saveTransaction(Account sourceAccount, Account targetAccount, BigDecimal sourceAmount, BigDecimal targetAmount) {
 
-    try {
-        Transaction debitTransaction = Transaction.builder()
-                .amount(sourceAmount)
-                .date(LocalDateTime.now())
-                .transactionId(AmsUtils.generateUniqueId())
-                .currency(sourceAccount.getCurrency())
-                .type(TransactionType.DEBIT.name())
-                .account(sourceAccount)
-                .build();
+        try {
+            Transaction debitTransaction = Transaction.builder()
+                    .amount(sourceAmount)
+                    .date(LocalDateTime.now())
+                    .transactionId(AmsUtils.generateUniqueId())
+                    .currency(sourceAccount.getCurrency())
+                    .type(TransactionType.DEBIT.name())
+                    .account(sourceAccount)
+                    .build();
+            log.trace("Saving DEBIT transaction");
+            transactionRepository.save(debitTransaction);
 
-        transactionRepository.save(debitTransaction);
-        log.trace("Saving DEBIT transaction");
 
-        Transaction creditTransaction =  Transaction.builder()
-                .amount(targetAmount)
-                .date(LocalDateTime.now())
-                .transactionId(AmsUtils.generateUniqueId())
-                .currency(targetAccount.getCurrency())
-                .type(TransactionType.CREDIT.name())
-                .account(targetAccount)
-                .build();
-        transactionRepository.save(creditTransaction);
-        log.trace("Saving CREDIT transaction");
-    }catch (Exception e){
-        log.trace(e.getMessage());
-        throw new InternalServerErrorException("Error while saving the object");
-    }
+            Transaction creditTransaction = Transaction.builder()
+                    .amount(targetAmount)
+                    .date(LocalDateTime.now())
+                    .transactionId(AmsUtils.generateUniqueId())
+                    .currency(targetAccount.getCurrency())
+                    .type(TransactionType.CREDIT.name())
+                    .account(targetAccount)
+                    .build();
+            log.trace("Saving CREDIT transaction");
+            transactionRepository.save(creditTransaction);
+
+        } catch (Exception e) {
+            log.trace(e.getMessage());
+            throw new InternalServerErrorException("Error while saving the object");
+        }
     }
 
     @Override
     public Object createAccount(Long clientId, CurrencyType currency) {
         Optional<Client> client = clientRepository.findClientByClientId(clientId);
-        if(client.isPresent()){
+        if (client.isPresent()) {
+            log.trace("Client found with clientId {}",clientId);
             boolean flag = false;
-            Optional<List<Account>> existingAccounts = accountRepository.findByClientAndCurrency(client.get(), currency.name());
-            if (existingAccounts.isPresent()) {
-                flag = existingAccounts.get().stream()
+            List<Account> existingAccounts = accountRepository.findByClientAndCurrency(client.get(), currency.name());
+            if (!existingAccounts.isEmpty()) {
+                flag = existingAccounts.stream()
                         .anyMatch(account -> currency.name()
                                 .equalsIgnoreCase(account.getCurrency()));
             }
@@ -142,11 +142,11 @@ public class AccountServiceImpl implements AccountService {
                         .build();
                 return AccountMapper.mapEntityToDto(accountRepository.save(account));
             } else {
-                log.error("Account already exists for currency {}",currency);
+                log.error("Account already exists for currency {}", currency);
                 throw new InvalidRequestException("Account already exists for currency:" + currency);
             }
         } else {
-            log.error("Account already exists for currency {}",currency);
+            log.error("Account already exists for currency {}", currency);
             throw new ResourceNotFoundException("No record found");
         }
     }

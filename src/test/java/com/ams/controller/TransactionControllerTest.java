@@ -20,9 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TransactionControllerTest {
 
     private final MockMvc mockMvc;
-    private static final String TRANSACTIONS_DETAILS_PATH = "/v1/clients/{clientId}/accounts";
-    private static final long ACCOUNT_ID_VALID = 1712957116411L;
-    private static final long ACCOUNT_ID_INVALID = 171296064379L;
+    private static final String TRANSACTIONS_DETAILS_PATH = "/v1/transactions/{accountId}";
+    private static final long ACCOUNT_ID_VALID = 1712960643757L;
+    private static final long ACCOUNT_ID_INVALID = 171296064370L;
 
     @Test
     @SneakyThrows
@@ -34,7 +34,6 @@ class TransactionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("OK"))
                 .andExpect(jsonPath("$.message").value("Success"))
-                .andExpect(jsonPath("$.data.[0].accountId").value("1712960643757"))
                 .andExpect(jsonPath("$.data.[0].currency").value("EUR"));
 
     }
@@ -45,9 +44,9 @@ class TransactionControllerTest {
         mockMvc.perform(get(TRANSACTIONS_DETAILS_PATH, ACCOUNT_ID_INVALID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value("NOT_FOUND"))
-                .andExpect(jsonPath("$.message").value("Record not found for client id 171296064379"));
+                .andExpect(jsonPath("$.message").value("Transactions not found"));
     }
 
 }

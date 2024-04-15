@@ -23,10 +23,10 @@ import java.math.BigDecimal;
 @Slf4j
 public class CurrencyExchange {
 
-    @Value("${currency.exchange.key:62205db3096c091233d56eac}")
+    @Value("${currency.exchange.key}")
     private String EXCHANGE_API_KEY;
 
-    @Value("${currency.exchange.url:https://v6.exchangerate-api.com/v6/}")
+    @Value("${currency.exchange.url}")
     private String EXCHANGE_API_URL;
 
     @Lazy
@@ -42,11 +42,12 @@ public class CurrencyExchange {
                 JsonObject jsonObject = JsonParser.parseString(responseString).getAsJsonObject();
                 return jsonObject.get("conversion_result").getAsBigDecimal();
             } else {
-                throw new InternalServerErrorException("Exchange service not available");
+                log.error("Exchange service not available");
+                throw new InternalServerErrorException("Exchange service not available, Please try after some time");
             }
         }catch (Exception e){
             log.error(e.getMessage());
-            throw new InternalServerErrorException("Exchange service not available");
+            throw new InternalServerErrorException("Exchange service not available, Please try after some time");
         }
 
     }

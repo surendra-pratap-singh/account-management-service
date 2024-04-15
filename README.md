@@ -22,3 +22,12 @@ Step 3 - To access the database enter the username - "sa" and do not provide pas
 Step 4 - Go to browser and test the h2 database connection and connect to access the database to check the records in the database.
 
 Step 5 - Go to path "http://localhost:8081/swagger-ui/index.html" on the web browser to access the swagger to test the created APIs.
+
+Step 10 - In the get mapping "/v1/clients/{clientId}/accounts" endpoint enter the clientId you received the accounts associated to the client.
+
+Step 11 - In the get mapping "/v1/transactions/{accountId}" endpoint to retrieve all the transaction records of the account in the database. In case, there are no shows, 404 status code is shown.
+
+Step 12 - In the get mapping "/v1/accounts/transfer" endpoint, enter the sourceAccountId, targetAccountId, amount and currency to transfer the funds.
+
+Step 13 - In the put mapping "/v1/accounts/create" endpoint, enter the clientId and select currency to create the account.
+

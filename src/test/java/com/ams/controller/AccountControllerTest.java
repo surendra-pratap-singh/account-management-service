@@ -29,7 +29,6 @@ class AccountControllerTest {
     private static final BigDecimal AMOUNT_SUCCESSFUL_TRANSFER = BigDecimal.valueOf(10);
     private static final String ACCOUNT_CREATION_PATH = "/v1/accounts/create";
     private static final long CREATE_ACCOUNT_CLIENT_ID_SUCCESSFUL = 1712957116411L;
-
     private static final long TARGET_ACCOUNT_ID_FAILED_TRANSFER_NOT_EXISTS = 17129602725189L;
 
     @Test
@@ -59,7 +58,6 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.status").value("CREATED"))
                 .andExpect(jsonPath("$.data.currency").value("AMD"))
                 .andExpect(jsonPath("$.data.clientId").value(CREATE_ACCOUNT_CLIENT_ID_SUCCESSFUL));
-
     }
 
     @Test
