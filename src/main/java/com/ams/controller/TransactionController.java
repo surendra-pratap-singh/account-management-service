@@ -45,8 +45,8 @@ public class TransactionController {
             })
     @GetMapping("/{accountId}")
     public ResponseEntity<Response> getAccountTransactions(@PathVariable @NonNull Long accountId,
-                                                                       @Min(value = 0) @RequestParam(defaultValue = "0") int offset,
-                                                                       @Min(value = 5) @Max(value = 10) @RequestParam(defaultValue = "10") int limit) {
+                                                           @Min(value = 0) @RequestParam(defaultValue = "0") int offset,
+                                                           @Min(value = 5) @Max(value = 10) @RequestParam(defaultValue = "10") int limit) {
         log.debug("Getting transactions for accountId:{}", AmsUtils.maskData(accountId));
         log.debug("Getting transactions for offset:{}", offset);
         log.debug("Getting transactions for limit:{}", limit);

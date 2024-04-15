@@ -27,7 +27,7 @@ public class Transaction {
     @Column(name = "transaction_id", nullable = false)
     private Long transactionId;
 
-    @Column(name = "txn_account", nullable = false)
+    @Column(name = "txn_amount", nullable = false)
     private BigDecimal amount;
 
     @Column(name = "txn_currency", nullable = false)

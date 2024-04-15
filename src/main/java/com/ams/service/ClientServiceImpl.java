@@ -29,13 +29,19 @@ public class ClientServiceImpl implements ClientService {
     public List<AccountDto> getClientAccounts(Long clientId) {
         Optional <Client> client = clientRepository.findClientByClientId(clientId);
         if(client.isPresent()){
-            List<Account> accountList = accountRepository.findByClient(client.get());
-            return accountList.stream().
-                    map(AccountMapper::mapEntityToDto).collect(Collectors.toList());
+            Optional<List<Account>> accountList = accountRepository.findByClient(client.get());
+            if(accountList.isPresent()) {
+                return accountList.get().stream().
+                        map(AccountMapper::mapEntityToDto).collect(Collectors.toList());
+            }
+            else {
+                log.trace("Record not found");
+                throw new ResourceNotFoundException("Record not found");
+            }
         }
         else {
             log.trace("Record not found");
-            throw new ResourceNotFoundException("Record not found for client id "+clientId);
+            throw new ResourceNotFoundException("Record not found");
         }
     }
 

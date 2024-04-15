@@ -1,7 +1,6 @@
 package com.ams.service;
 
 import com.ams.enums.CurrencyType;
-import com.ams.model.dto.AccountDto;
 import com.ams.model.dto.TransactionDto;
 
 import java.math.BigDecimal;

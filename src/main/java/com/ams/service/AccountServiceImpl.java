@@ -20,11 +20,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +43,7 @@ public class AccountServiceImpl implements AccountService {
     public List<TransactionDto> getTransactions(Long accountId, int offset, int limit) {
         Pageable pageable = PageRequest.of(offset, limit);
         List<Transaction> transaction = transactionRepository.findByAccountIdOrderByDateDesc(accountId, pageable);
+        System.out.println("transaction size: "+transaction.size());
         log.trace("List of transaction from db {}",transaction.size());
         return transaction.stream()
                 .map(TransactionMapper::mapTransactionEntityToDto)
@@ -125,9 +128,9 @@ public class AccountServiceImpl implements AccountService {
         Optional<Client> client = clientRepository.findClientByClientId(clientId);
         if(client.isPresent()){
             boolean flag = false;
-            List<Account> existingAccounts = accountRepository.findByClientAndCurrency(client.get(), currency.name());
-            if (existingAccounts != null && !ObjectUtils.isEmpty(existingAccounts)) {
-                flag = existingAccounts.stream()
+            Optional<List<Account>> existingAccounts = accountRepository.findByClientAndCurrency(client.get(), currency.name());
+            if (existingAccounts.isPresent()) {
+                flag = existingAccounts.get().stream()
                         .anyMatch(account -> currency.name()
                                 .equalsIgnoreCase(account.getCurrency()));
             }
