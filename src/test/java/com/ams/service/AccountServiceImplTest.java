@@ -83,7 +83,7 @@ class AccountServiceImplTest {
         Account account2 = Account.builder().currency("USD").client(getClients().get(1)).balance(BigDecimal.valueOf(100)).accountId(SOURCE_ACCOUNT_ID_2).build();
         Account account3 = Account.builder().currency("EUR").client(getClients().get(1)).balance(BigDecimal.valueOf(100)).accountId(TARGET_ACCOUNT_ID_1).build();
         Account account4 = Account.builder().currency("INR").client(getClients().get(0)).balance(BigDecimal.valueOf(100)).accountId(TARGET_ACCOUNT_ID_2).build();
-        return Arrays.asList(account1, account1, account1, account1);
+        return Arrays.asList(account1, account2, account3, account4);
     }
 
     private List<Transaction> getTransactions() {

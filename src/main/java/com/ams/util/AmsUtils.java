@@ -1,8 +1,6 @@
 package com.ams.util;
 
 import java.security.SecureRandom;
-import java.util.Random;
-import java.util.random.RandomGenerator;
 
 public class AmsUtils {
 

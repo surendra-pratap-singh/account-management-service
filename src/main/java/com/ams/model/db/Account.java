@@ -1,5 +1,7 @@
 package com.ams.model.db;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +10,9 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "account_tbl")
+@Table(name = "account_tbl", indexes = {
+    @Index(name = "client_id_index", columnList = "client_id")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -32,9 +36,11 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", referencedColumnName = "client_id")
+    @JsonBackReference
     private Client client;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
     private List<Transaction> transactions;
 
 

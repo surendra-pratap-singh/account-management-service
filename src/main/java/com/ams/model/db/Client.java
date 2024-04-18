@@ -1,5 +1,6 @@
 package com.ams.model.db;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.NaturalId;
@@ -34,7 +35,8 @@ public class Client {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
     private List<Account> accounts;
 
     @Override

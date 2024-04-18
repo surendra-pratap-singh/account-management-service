@@ -1,5 +1,6 @@
 package com.ams.model.db;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,9 @@ import java.util.Objects;
 
 
 @Entity
-@Table(name = "transaction_tbl")
+@Table(name = "transaction_tbl", indexes = {
+        @Index(name = "account_id_index", columnList = "account_id")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -39,8 +42,9 @@ public class Transaction {
     @Column(name = "txn_date")
     private LocalDateTime date;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "account_id")
+    @JsonBackReference
     private Account account;
 
     @Override

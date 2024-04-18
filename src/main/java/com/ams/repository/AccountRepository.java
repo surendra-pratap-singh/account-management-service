@@ -13,7 +13,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByAccountId(Long accountId);
 
-    List<Account> findByClientAndCurrency(Client client, String currency);
+    Optional<Account> findByClientAndCurrency(Client client, String currency);
 
     List<Account> findByClient(Client client);
 }

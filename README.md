@@ -27,7 +27,7 @@ Step 6 - In the get mapping "/v1/clients/{clientId}/accounts" endpoint enter the
 
 Step 7 - In the get mapping "/v1/transactions/{accountId}" endpoint to retrieve all the transaction records of the account in the database. In case, there are no shows, 404 status code is shown.
 
-Step 8 - In the get mapping "/v1/accounts/transfer" endpoint, enter the sourceAccountId, targetAccountId, amount and currency to transfer the funds.
+Step 8 - In the post mapping "/v1/accounts/transfer" endpoint, enter the sourceAccountId, targetAccountId, amount and currency to transfer the funds.
 
-Step 9 - In the put mapping "/v1/accounts/create" endpoint, enter the clientId and select currency to create the account.
+Step 9 - In the post mapping "/v1/accounts/create" endpoint, enter the clientId and select currency to create the account.
 

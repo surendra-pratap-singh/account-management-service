@@ -101,9 +101,6 @@ public class AccountServiceImpl implements AccountService {
                     .type(TransactionType.DEBIT.name())
                     .account(sourceAccount)
                     .build();
-            log.trace("Saving DEBIT transaction");
-            transactionRepository.save(debitTransaction);
-
 
             Transaction creditTransaction = Transaction.builder()
                     .amount(targetAmount)
@@ -113,8 +110,8 @@ public class AccountServiceImpl implements AccountService {
                     .type(TransactionType.CREDIT.name())
                     .account(targetAccount)
                     .build();
-            log.trace("Saving CREDIT transaction");
-            transactionRepository.save(creditTransaction);
+            log.trace("Saving DEBIT/CREDIT transaction");
+            transactionRepository.saveAll(List.of(debitTransaction,creditTransaction));
 
         } catch (Exception e) {
             log.trace(e.getMessage());
@@ -127,14 +124,8 @@ public class AccountServiceImpl implements AccountService {
         Optional<Client> client = clientRepository.findClientByClientId(clientId);
         if (client.isPresent()) {
             log.trace("Client found with clientId {}",clientId);
-            boolean flag = false;
-            List<Account> existingAccounts = accountRepository.findByClientAndCurrency(client.get(), currency.name());
-            if (!existingAccounts.isEmpty()) {
-                flag = existingAccounts.stream()
-                        .anyMatch(account -> currency.name()
-                                .equalsIgnoreCase(account.getCurrency()));
-            }
-            if (!flag) {
+            Optional<Account> existingAccounts = accountRepository.findByClientAndCurrency(client.get(), currency.name());
+            if (existingAccounts.isEmpty()) {
                 Account account = Account.builder().currency(currency.toString())
                         .client(client.get())
                         .balance(BigDecimal.ZERO)
